@@ -1,6 +1,3 @@
-turns = [0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1,\
-         0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0]
-
 (X, Y, Z) = (0, 1, 2)
 (U, D) = (1, -1)
 
@@ -12,14 +9,14 @@ def other_dims(dim):
     else: #dim == Z
         return [(X, U), (X, D), (Y,U), (Y,D)]
 
-def print_sol(sol):
+def print_sol(origin, sol):
     nxt_pos = list(origin)
     for nxt in sol:
         print nxt_pos,
         nxt_pos[nxt[0]] += nxt[1]
     print nxt_pos
 
-def place_next(i, prv_pos, prv, sol, visited):
+def place_next(origin, turns, i, prv_pos, prv, sol, visited):
 
     cur_pos = list(prv_pos)
     cur_pos[prv[0]] += prv[1]
@@ -38,23 +35,29 @@ def place_next(i, prv_pos, prv, sol, visited):
 
     if len(visited) == 3*3*3:
         print "Found solution:"
-        print_sol(sol)
+        print_sol(origin, sol)
         exit(0)
 
     if turns[i] == 1:
         for n in other_dims(prv[0]):
             # print "Turning", n
-            place_next(i, cur_pos, n, sol, visited)
+            place_next(origin, turns, i, cur_pos, n, sol, visited)
     else:
         # print "No turning"
-        place_next(i, cur_pos, prv, sol, visited)
+        place_next(origin, turns, i, cur_pos, prv, sol, visited)
 
     del visited[cur_pos]
     del sol[-1]
-    
-for x in range(3):
-    for y in range(3):
-        z = 2
-        origin = (x, y, z)
-        nxt = (Z, D)
-        place_next(0, origin, nxt, [], {origin:1})
+
+def solve(turns):
+    for x in range(3):
+        for y in range(3):
+            z = 2
+            origin = (x, y, z)
+            nxt = (Z, D)
+            place_next(origin, turns, 0, origin, nxt, [], {origin:1})
+
+if __name__ == "__main__":
+    snake = [0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1,\
+             0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0]
+    solve(snake)
